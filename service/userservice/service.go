@@ -9,7 +9,7 @@ import (
 
 type Repository interface {
 	IsPhoneNumberUnique(phonenumber string) (bool, error)
-	RegisterUser(u entity.User) (entity.User, error)
+	Register(u entity.User) (entity.User, error)
 }
 
 type Service struct {
@@ -23,6 +23,10 @@ type RegisterRequest struct {
 
 type RegisteResponse struct {
 	User entity.User
+}
+
+func New(repo Repository) Service {
+	return Service{repo: repo}
 }
 
 func (s *Service) Register(req RegisterRequest) (RegisteResponse, error) {
@@ -56,7 +60,7 @@ func (s *Service) Register(req RegisterRequest) (RegisteResponse, error) {
 		PhoneNumber: req.PhoneNumber,
 	}
 	// create new user in storage
-	createdUser, error := s.repo.RegisterUser(user)
+	createdUser, error := s.repo.Register(user)
 
 	if error != nil {
 		return RegisteResponse{}, fmt.Errorf("unexpected error : %w", error)
